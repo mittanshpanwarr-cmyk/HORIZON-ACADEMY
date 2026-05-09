@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Horizon Academy — Future Builders</title>
+
+  <!-- Google Fonts: Bebas Neue for headings, DM Sans for body -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* =============================================
+       CSS CUSTOM PROPERTIES (Design Tokens)
+       ============================================= */
+    :root {
+      --navy:   #0a1628;
+      --ink:    #111827;
+      --sky:    #1a6fff;
+      --cyan:   #00d4ff;
+      --white:  #f5f9ff;
+      --muted:  #8fa3bf;
+      --card-bg:#0d1e38;
+      --radius: 16px;
+      --gap:    clamp(1rem, 4vw, 2.5rem);
+    }
+
+    /* =============================================
+       GLOBAL RESET & BASE STYLES
+       ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+      /* Subtle dot-grid background texture */
+      background-image: radial-gradient(circle, rgba(26,111,255,.12) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    h1, h2, h3 { font-family: 'Bebas Neue', sans-serif; letter-spacing: .04em; }
+
+    a { text-decoration: none; color: inherit; }
+
+    section { padding: clamp(4rem, 10vw, 7rem) var(--gap); }
+
+    /* =============================================
+       NOISE OVERLAY (decorative texture)
+       ============================================= */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: .5;
+    }
+
+    /* Keep all actual content above the overlay */
+    header, main, footer { position: relative; z-index: 1; }
+
+    /* =============================================
+       NAVIGATION / HEADER
+       ============================================= */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem clamp(1rem, 5vw, 3rem);
+      background: rgba(10,22,40,.85);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(26,111,255,.2);
+      transition: box-shadow .3s;
+    }
+
+    /* School logo / name */
+    .logo {
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--sky), var(--cyan));
+      display: grid; place-items: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; color: var(--navy);
+    }
+    .logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem; letter-spacing: .08em;
+      background: linear-gradient(90deg, var(--white), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* Desktop nav links */
+    nav { display: flex; align-items: center; gap: 2rem; }
+
+    nav a {
+      font-size: .9rem; font-weight: 600; color: var(--muted);
+      transition: color .25s; position: relative; padding-bottom: 2px;
+    }
+    /* Animated underline on hover */
+    nav a::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: linear-gradient(90deg, var(--sky), var(--cyan));
+      transition: width .3s;
+    }
+    nav a:hover { color: var(--white); }
+    nav a:hover::after { width: 100%; }
+
+    /* Hamburger button (mobile) */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 24px; height: 2px;
+      background: var(--white); border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+    /* Mobile open state */
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile nav drawer */
+    .mobile-nav {
+      display: none; flex-direction: column; gap: 1.2rem;
+      position: fixed; top: 65px; left: 0; right: 0; z-index: 998;
+      background: rgba(10,22,40,.97); padding: 2rem clamp(1rem,5vw,3rem);
+      border-bottom: 1px solid rgba(26,111,255,.15);
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a { font-size: 1.1rem; font-weight: 600; color: var(--muted); }
+    .mobile-nav a:hover { color: var(--white); }
+
+    /* =============================================
+       HERO / HOME SECTION
+       ============================================= */
+    #home {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding-top: 6rem; /* clear the fixed header */
+      max-width: 900px; margin: 0 auto;
+    }
+
+    /* Small label above heading */
+    .label {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .78rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--cyan);
+      background: rgba(0,212,255,.08); border: 1px solid rgba(0,212,255,.2);
+      padding: .35rem .85rem; border-radius: 999px;
+      margin-bottom: 1.6rem;
+      animation: fadeUp .6s ease both;
+    }
+    .label .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); }
+
+    #home h1 {
+      font-size: clamp(3.5rem, 9vw, 7rem); line-height: .95;
+      animation: fadeUp .7s .1s ease both;
+    }
+    /* Gradient accent word */
+    #home h1 span {
+      background: linear-gradient(135deg, var(--sky) 20%, var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    #home p.sub {
+      margin-top: 1.4rem; max-width: 520px;
+      font-size: 1.05rem; color: var(--muted); line-height: 1.7;
+      animation: fadeUp .7s .2s ease both;
+    }
+
+    .hero-actions {
+      margin-top: 2.4rem; display: flex; gap: 1rem; flex-wrap: wrap;
+      animation: fadeUp .7s .3s ease both;
+    }
+
+    /* Primary CTA button */
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: linear-gradient(135deg, var(--sky), var(--cyan));
+      color: var(--navy); font-weight: 700; font-size: .95rem;
+      padding: .85rem 1.8rem; border-radius: 999px; border: none; cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 0 0 0 rgba(0,212,255,.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(0,212,255,.35);
+    }
+
+    /* Secondary ghost button */
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: transparent; color: var(--white); font-weight: 600; font-size: .95rem;
+      padding: .85rem 1.8rem; border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,.18); cursor: pointer;
+      transition: background .2s, border-color .2s, transform .2s;
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,.06);
+      border-color: rgba(255,255,255,.35);
+      transform: translateY(-3px);
+    }
+
+    /* Floating stats strip */
+    .stats-strip {
+      display: flex; gap: 2.5rem; flex-wrap: wrap;
+      margin-top: 4rem; padding-top: 2.5rem;
+      border-top: 1px solid rgba(255,255,255,.07);
+      animation: fadeUp .7s .45s ease both;
+    }
+    .stat-item .num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem; color: var(--cyan); line-height: 1;
+    }
+    .stat-item .desc {
+      font-size: .8rem; color: var(--muted); font-weight: 300; margin-top: .2rem;
+    }
+
+    /* Decorative blobs */
+    .blob {
+      position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0;
+    }
+    .blob-1 {
+      width: 400px; height: 400px;
+      background: rgba(26,111,255,.2);
+      top: 8%; right: -100px;
+      animation: float 8s ease-in-out infinite;
+    }
+    .blob-2 {
+      width: 300px; height: 300px;
+      background: rgba(0,212,255,.12);
+      bottom: 5%; left: -80px;
+      animation: float 10s 2s ease-in-out infinite reverse;
+    }
+
+    /* =============================================
+       SECTION HEADERS (reusable)
+       ============================================= */
+    .section-header { text-align: center; margin-bottom: clamp(2.5rem, 6vw, 4rem); }
+    .section-header h2 { font-size: clamp(2.6rem, 6vw, 4.5rem); }
+    .section-header h2 span {
+      background: linear-gradient(135deg, var(--sky), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .section-header p { color: var(--muted); margin-top: .8rem; max-width: 500px; margin-inline: auto; }
+
+    /* =============================================
+       ABOUT SECTION
+       ============================================= */
+    #about { max-width: 1100px; margin: 0 auto; }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+
+    .about-visual {
+      position: relative;
+    }
+    /* Big glowing card */
+    .about-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(26,111,255,.2);
+      border-radius: var(--radius); padding: 2.4rem;
+      box-shadow: 0 0 60px rgba(26,111,255,.08);
+    }
+    .about-card .tag {
+      font-size: .7rem; font-weight: 700; letter-spacing: .15em;
+      text-transform: uppercase; color: var(--cyan);
+      margin-bottom: .8rem;
+    }
+    .about-card blockquote {
+      font-size: 1.15rem; font-style: italic; color: var(--white);
+      line-height: 1.65; border-left: 3px solid var(--sky); padding-left: 1rem;
+    }
+    .about-card .author {
+      margin-top: 1.2rem; font-size: .85rem; color: var(--muted);
+    }
+
+    /* Small floating badges */
+    .badge {
+      position: absolute; display: flex; align-items: center; gap: .5rem;
+      background: rgba(10,22,40,.9); border: 1px solid rgba(26,111,255,.3);
+      border-radius: 12px; padding: .6rem 1rem;
+      font-size: .8rem; font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+    }
+    .badge-tl { top: -18px; right: 24px; }
+    .badge-br { bottom: -18px; left: 24px; }
+    .badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); }
+
+    .about-content h2 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem); line-height: 1.05; margin-bottom: 1rem;
+    }
+    .about-content h2 span {
+      background: linear-gradient(135deg, var(--sky), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .about-content p { color: var(--muted); line-height: 1.75; margin-bottom: 1rem; }
+
+    .about-pillars {
+      display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; margin-top: 1.5rem;
+    }
+    .pillar {
+      display: flex; align-items: flex-start; gap: .65rem;
+      background: var(--card-bg); border: 1px solid rgba(26,111,255,.15);
+      border-radius: 12px; padding: .9rem 1rem;
+    }
+    .pillar-icon {
+      font-size: 1.3rem; line-height: 1; flex-shrink: 0;
+    }
+    .pillar h4 { font-size: .82rem; font-weight: 700; margin-bottom: .2rem; }
+    .pillar p { font-size: .75rem; color: var(--muted); line-height: 1.4; margin: 0; }
+
+    /* =============================================
+       COURSES SECTION
+       ============================================= */
+    #courses {
+      background: rgba(13,30,56,.5);
+      border-top: 1px solid rgba(26,111,255,.1);
+      border-bottom: 1px solid rgba(26,111,255,.1);
+    }
+    .courses-inner { max-width: 1100px; margin: 0 auto; }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .course-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(26,111,255,.15);
+      border-radius: var(--radius); padding: 2rem;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+      position: relative; overflow: hidden; cursor: default;
+    }
+    /* Top accent line */
+    .course-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; background: linear-gradient(90deg, var(--sky), var(--cyan));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .35s ease;
+    }
+    .course-card:hover { transform: translateY(-6px); border-color: rgba(26,111,255,.4); box-shadow: 0 20px 48px rgba(0,0,0,.3); }
+    .course-card:hover::before { transform: scaleX(1); }
+
+    .course-emoji { font-size: 2.2rem; margin-bottom: .9rem; }
+    .course-tag {
+      display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--cyan);
+      background: rgba(0,212,255,.1); padding: .25rem .7rem; border-radius: 999px;
+      margin-bottom: .8rem;
+    }
+    .course-card h3 { font-size: 1.55rem; margin-bottom: .6rem; }
+    .course-card p { font-size: .88rem; color: var(--muted); line-height: 1.65; }
+    .course-meta {
+      display: flex; gap: 1.5rem; margin-top: 1.4rem;
+      padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .meta-item { font-size: .78rem; color: var(--muted); }
+    .meta-item strong { display: block; color: var(--white); font-size: .82rem; }
+
+    /* =============================================
+       CONTACT SECTION
+       ============================================= */
+    #contact { max-width: 760px; margin: 0 auto; }
+
+    .contact-form {
+      background: var(--card-bg);
+      border: 1px solid rgba(26,111,255,.2);
+      border-radius: var(--radius); padding: clamp(1.8rem, 5vw, 3rem);
+      box-shadow: 0 0 80px rgba(26,111,255,.06);
+    }
+
+    .form-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .form-group { display: flex; flex-direction: column; gap: .45rem; margin-bottom: 1rem; }
+
+    label {
+      font-size: .8rem; font-weight: 600; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--muted);
+    }
+
+    input, textarea, select {
+      background: rgba(255,255,255,.04);
+      border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 10px; color: var(--white);
+      font-family: 'DM Sans', sans-serif; font-size: .95rem;
+      padding: .85rem 1rem; transition: border-color .25s, background .25s;
+      outline: none; width: 100%; resize: vertical;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--sky);
+      background: rgba(26,111,255,.06);
+      box-shadow: 0 0 0 4px rgba(26,111,255,.12);
+    }
+    input::placeholder, textarea::placeholder { color: rgba(143,163,191,.5); }
+
+    /* Error message */
+    .error-msg {
+      font-size: .78rem; color: #ff6b6b; margin-top: -.3rem;
+      display: none; /* shown via JS */
+    }
+
+    .btn-submit {
+      width: 100%; margin-top: .5rem;
+      background: linear-gradient(135deg, var(--sky), var(--cyan));
+      color: var(--navy); font-weight: 700; font-size: 1rem;
+      padding: 1rem; border-radius: 12px; border: none; cursor: pointer;
+      letter-spacing: .04em; transition: transform .2s, box-shadow .2s;
+    }
+    .btn-submit:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 36px rgba(0,212,255,.35);
+    }
+
+    /* Success banner (hidden by default) */
+    #success-banner {
+      display: none; text-align: center; padding: 1.5rem;
+      background: rgba(0,212,255,.08); border: 1px solid rgba(0,212,255,.3);
+      border-radius: 12px; margin-top: 1.2rem;
+      color: var(--cyan); font-weight: 600; font-size: .95rem;
+    }
+
+    /* =============================================
+       WELCOME MODAL (JS interactive feature)
+       ============================================= */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,.65); backdrop-filter: blur(6px);
+      place-items: center;
+    }
+    .modal-overlay.open { display: grid; }
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid rgba(26,111,255,.3);
+      border-radius: var(--radius); padding: 3rem 2.5rem;
+      text-align: center; max-width: 460px; width: 90%;
+      animation: popIn .35s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .modal h2 { font-size: 2.8rem; margin-bottom: .8rem; }
+    .modal h2 span {
+      background: linear-gradient(135deg, var(--sky), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .modal p { color: var(--muted); line-height: 1.65; margin-bottom: 1.8rem; }
+    .modal-close {
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+      color: var(--white); padding: .7rem 2rem; border-radius: 999px; cursor: pointer;
+      font-weight: 600; transition: background .2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,.15); }
+
+    /* =============================================
+       FOOTER
+       ============================================= */
+    footer {
+      text-align: center; padding: 2rem var(--gap);
+      border-top: 1px solid rgba(26,111,255,.1);
+      color: var(--muted); font-size: .82rem;
+    }
+    footer span { color: var(--cyan); }
+
+    /* =============================================
+       KEYFRAME ANIMATIONS
+       ============================================= */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-22px); }
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* =============================================
+       RESPONSIVE — MOBILE
+       ============================================= */
+    @media (max-width: 768px) {
+      nav { display: none; } /* replaced by hamburger */
+      .hamburger { display: flex; }
+
+      .about-grid { grid-template-columns: 1fr; }
+      .about-visual { order: 1; }
+      .about-content { order: 2; }
+      .about-pillars { grid-template-columns: 1fr; }
+
+      .form-row { grid-template-columns: 1fr; }
+
+      .stats-strip { gap: 1.5rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===================================
+       HEADER / NAVIGATION
+       =================================== -->
+  <header>
+    <div class="logo">
+      <!-- Logo icon with initials -->
+      <div class="logo-icon">HA</div>
+      <span class="logo-text">Horizon Academy</span>
+    </div>
+
+    <!-- Desktop navigation links -->
+    <nav id="desktop-nav">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#courses">Courses</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <!-- Hamburger button for mobile -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <!-- Mobile navigation drawer -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="#home"    onclick="closeMobileNav()">Home</a>
+    <a href="#about"   onclick="closeMobileNav()">About</a>
+    <a href="#courses" onclick="closeMobileNav()">Courses</a>
+    <a href="#contact" onclick="closeMobileNav()">Contact</a>
+  </div>
+
+
+  <main>
+
+    <!-- ===================================
+         HOME / HERO SECTION
+         =================================== -->
+    <section id="home">
+      <!-- Decorative glowing blobs -->
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+
+      <!-- Badge label above heading -->
+      <div class="label"><span class="dot"></span> Est. 1998 · Shaping Tomorrow's Leaders</div>
+
+      <!-- Main hero heading -->
+      <h1>Welcome to<br><span>Horizon</span><br>Academy</h1>
+
+      <!-- Hero subtext -->
+      <p class="sub">
+        A place where curiosity meets opportunity. We nurture critical thinkers,
+        innovators, and compassionate citizens — ready for a world that never
+        stops changing.
+      </p>
+
+      <!-- CTA buttons -->
+      <div class="hero-actions">
+        <a href="#courses" class="btn-primary">Explore Courses →</a>
+        <!-- JS Interactive Feature: click opens Welcome modal -->
+        <button class="btn-ghost" onclick="openWelcomeModal()">✨ Say Hello</button>
+      </div>
+
+      <!-- Quick stats strip -->
+      <div class="stats-strip">
+        <div class="stat-item"><div class="num">1,200+</div><div class="desc">Students Enrolled</div></div>
+        <div class="stat-item"><div class="num">85+</div><div class="desc">Expert Faculty</div></div>
+        <div class="stat-item"><div class="num">40+</div><div class="desc">Courses Offered</div></div>
+        <div class="stat-item"><div class="num">97%</div><div class="desc">Placement Rate</div></div>
+      </div>
+    </section>
+
+
+    <!-- ===================================
+         ABOUT SECTION
+         =================================== -->
+    <section id="about">
+      <div class="about-grid">
+
+        <!-- Left: decorative card with quote -->
+        <div class="about-visual">
+          <!-- Floating badges -->
+          <div class="badge badge-tl">
+            <div class="badge-dot"></div> NAAC 'A' Accredited
+          </div>
+
+          <div class="about-card">
+            <div class="tag">Our Philosophy</div>
+            <blockquote>
+              "Education is not the filling of a pail, but the lighting of a fire.
+              At Horizon, we light that fire every single day."
+            </blockquote>
+            <div class="author">— Dr. Ananya Sharma, Principal</div>
+          </div>
+
+          <div class="badge badge-br">
+            <div class="badge-dot"></div> 25+ Years of Excellence
+          </div>
+        </div>
+
+        <!-- Right: about text & pillars -->
+        <div class="about-content">
+          <h2>Built on <span>Purpose</span>,<br>Driven by Passion</h2>
+          <p>
+            Founded in 1998, Horizon Academy has grown into one of the region's
+            most respected institutions — blending rigorous academics with
+            holistic development.
+          </p>
+          <p>
+            Our campus is equipped with modern labs, a 50,000-book library,
+            sports facilities, and innovation hubs — because we believe great
+            learning happens beyond textbooks.
+          </p>
+
+          <!-- Core pillars grid -->
+          <div class="about-pillars">
+            <div class="pillar">
+              <div class="pillar-icon">🏛️</div>
+              <div>
+                <h4>Strong Foundation</h4>
+                <p>Curriculum aligned with NEP 2020 and global standards.</p>
+              </div>
+            </div>
+            <div class="pillar">
+              <div class="pillar-icon">🔬</div>
+              <div>
+                <h4>Research Focus</h4>
+                <p>State-of-the-art labs and dedicated research mentors.</p>
+              </div>
+            </div>
+            <div class="pillar">
+              <div class="pillar-icon">🌍</div>
+              <div>
+                <h4>Global Mindset</h4>
+                <p>International exchange programs & industry partnerships.</p>
+              </div>
+            </div>
+            <div class="pillar">
+              <div class="pillar-icon">🤝</div>
+              <div>
+                <h4>Community Values</h4>
+                <p>NSS, clubs & social impact initiatives since day one.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ===================================
+         COURSES SECTION
+         =================================== -->
+    <section id="courses">
+      <div class="courses-inner">
+        <div class="section-header">
+          <div class="label"><span class="dot"></span> What We Offer</div>
+          <h2>Our <span>Courses</span></h2>
+          <p>From foundational sciences to cutting-edge technology — there's a path for every mind.</p>
+        </div>
+
+        <!-- Courses grid — 3+ cards -->
+        <div class="courses-grid">
+
+          <!-- Course 1 -->
+          <div class="course-card">
+            <div class="course-emoji">💻</div>
+            <div class="course-tag">Engineering</div>
+            <h3>Computer Science</h3>
+            <p>Dive into algorithms, data structures, AI/ML, full-stack development, and cloud computing through hands-on projects.</p>
+            <div class="course-meta">
+              <div class="meta-item"><strong>4 Years</strong> Duration</div>
+              <div class="meta-item"><strong>B.Tech</strong> Degree</div>
+              <div class="meta-item"><strong>120</strong> Seats</div>
+            </div>
+          </div>
+
+          <!-- Course 2 -->
+          <div class="course-card">
+            <div class="course-emoji">📊</div>
+            <div class="course-tag">Science</div>
+            <h3>Data Science</h3>
+            <p>Master Python, machine learning, statistical modelling, and big-data pipelines with real-world case studies and internships.</p>
+            <div class="course-meta">
+              <div class="meta-item"><strong>3 Years</strong> Duration</div>
+              <div class="meta-item"><strong>B.Sc</strong> Degree</div>
+              <div class="meta-item"><strong>60</strong> Seats</div>
+            </div>
+          </div>
+
+          <!-- Course 3 -->
+          <div class="course-card">
+            <div class="course-emoji">⚡</div>
+            <div class="course-tag">Engineering</div>
+            <h3>Electronics & Comm.</h3>
+            <p>Explore embedded systems, VLSI design, IoT, signal processing, and telecommunications engineering end-to-end.</p>
+            <div class="course-meta">
+              <div class="meta-item"><strong>4 Years</strong> Duration</div>
+              <div class="meta-item"><strong>B.Tech</strong> Degree</div>
+              <div class="meta-item"><strong>90</strong> Seats</div>
+            </div>
+          </div>
+
+          <!-- Course 4 -->
+          <div class="course-card">
+            <div class="course-emoji">🧪</div>
+            <div class="course-tag">Science</div>
+            <h3>Biotechnology</h3>
+            <p>Bridge biology and engineering to work on genetics, pharmaceuticals, bioinformatics, and environmental solutions.</p>
+            <div class="course-meta">
+              <div class="meta-item"><strong>3 Years</strong> Duration</div>
+              <div class="meta-item"><strong>B.Sc</strong> Degree</div>
+              <div class="meta-item"><strong>45</strong> Seats</div>
+            </div>
+          </div>
+
+          <!-- Course 5 -->
+          <div class="course-card">
+            <div class="course-emoji">📐</div>
+            <div class="course-tag">Engineering</div>
+            <h3>Mechanical Engg.</h3>
+            <p>From CAD/CAM and thermodynamics to robotics and manufacturing — build the machines of tomorrow.</p>
+            <div class="course-meta">
+              <div class="meta-item"><strong>4 Years</strong> Duration</div>
+              <div class="meta-item"><strong>B.Tech</strong> Degree</div>
+              <div class="meta-item"><strong>120</strong> Seats</div>
+            </div>
+          </div>
+
+          <!-- Course 6 -->
+          <div class="course-card">
+            <div class="course-emoji">💼</div>
+            <div class="course-tag">Management</div>
+            <h3>Business Admin.</h3>
+            <p>Marketing, finance, HR, and entrepreneurship — develop leadership skills alongside real business challenges.</p>
+            <div class="course-meta">
+              <div class="meta-item"><strong>2 Years</strong> Duration</div>
+              <div class="meta-item"><strong>MBA</strong> Degree</div>
+              <div class="meta-item"><strong>60</strong> Seats</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===================================
+         CONTACT SECTION
+         =================================== -->
+    <section id="contact">
+      <div class="section-header">
+        <div class="label"><span class="dot"></span> Get In Touch</div>
+        <h2>Contact <span>Us</span></h2>
+        <p>Have questions about admissions, courses, or campus life? We'd love to hear from you.</p>
+      </div>
+
+      <!-- Contact form -->
+      <div class="contact-form">
+        <form id="contact-form" novalidate>
+
+          <!-- Name & Email in one row on desktop -->
+          <div class="form-row">
+
+            <!-- Name field -->
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" placeholder="e.g. Arjun Sharma" />
+              <span class="error-msg" id="name-error">Please enter your name.</span>
+            </div>
+
+            <!-- Email field -->
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" placeholder="you@example.com" />
+              <span class="error-msg" id="email-error">Please enter a valid email.</span>
+            </div>
+
+          </div>
+
+          <!-- Message field -->
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea id="message" name="message" rows="5"
+              placeholder="Tell us what you'd like to know..."></textarea>
+            <span class="error-msg" id="message-error">Please write a message.</span>
+          </div>
+
+          <!-- Submit button -->
+          <button type="submit" class="btn-submit">Send Message →</button>
+
+        </form>
+
+        <!-- Success banner — hidden until form submits successfully -->
+        <div id="success-banner">
+          ✅ Message sent! We'll get back to you within 24 hours.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ===================================
+       FOOTER
+       =================================== -->
+  <footer>
+    <p>© 2025 <span>Horizon Academy</span>. Made with ❤️ for learners everywhere.</p>
+  </footer>
+
+
+  <!-- ===================================
+       WELCOME MODAL (JS interactive feature)
+       =================================== -->
+  <div class="modal-overlay" id="welcome-modal">
+    <div class="modal">
+      <div style="font-size:3rem;margin-bottom:.5rem;">🎓</div>
+      <h2>Welcome to <span>Horizon!</span></h2>
+      <p>
+        We're so glad you stopped by. Horizon Academy is more than a school —
+        it's a community of curious, driven, and kind human beings.
+        Explore our courses or drop us a message. The journey starts here!
+      </p>
+      <button class="modal-close" onclick="closeWelcomeModal()">Let's Go! 🚀</button>
+    </div>
+  </div>
+
+
+  <!-- ===================================
+       JAVASCRIPT
+       =================================== -->
+  <script>
+    /* -----------------------------------------------
+       1. HAMBURGER / MOBILE NAV TOGGLE
+       ----------------------------------------------- */
+    const hamburger  = document.getElementById('hamburger');
+    const mobileNav  = document.getElementById('mobile-nav');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open');
+    });
+
+    // Close mobile nav when a link is clicked
+    function closeMobileNav() {
+      hamburger.classList.remove('open');
+      mobileNav.classList.remove('open');
+    }
+
+
+    /* -----------------------------------------------
+       2. WELCOME MODAL (JS Interactive Feature)
+       Shows a "Welcome to our school!" style message
+       ----------------------------------------------- */
+    function openWelcomeModal() {
+      document.getElementById('welcome-modal').classList.add('open');
+    }
+
+    function closeWelcomeModal() {
+      document.getElementById('welcome-modal').classList.remove('open');
+    }
+
+    // Close modal if user clicks the dark overlay area
+    document.getElementById('welcome-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeWelcomeModal();
+    });
+
+
+    /* -----------------------------------------------
+       3. CONTACT FORM VALIDATION & SUBMISSION
+       ----------------------------------------------- */
+
+    // Helper: show an error message below a field
+    function showError(fieldId, errorId) {
+      document.getElementById(errorId).style.display = 'block';
+    }
+
+    // Helper: hide an error message
+    function hideError(errorId) {
+      document.getElementById(errorId).style.display = 'none';
+    }
+
+    // Helper: validate email format with regex
+    function isValidEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    // Listen for form submission
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault(); // Stop the page from reloading
+
+      // Get field values (trim whitespace)
+      const name    = document.getElementById('name').value.trim();
+      const email   = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      let valid = true; // assume valid until a check fails
+
+      // --- Validate Name ---
+      if (name === '') {
+        showError('name', 'name-error');
+        valid = false;
+      } else {
+        hideError('name-error');
+      }
+
+      // --- Validate Email ---
+      if (email === '' || !isValidEmail(email)) {
+        showError('email', 'email-error');
+        valid = false;
+      } else {
+        hideError('email-error');
+      }
+
+      // --- Validate Message ---
+      if (message === '') {
+        showError('message', 'message-error');
+        valid = false;
+      } else {
+        hideError('message-error');
+      }
+
+      // If all fields are valid, show success
+      if (valid) {
+        // Reset the form fields
+        this.reset();
+
+        // Show the inline success banner
+        const banner = document.getElementById('success-banner');
+        banner.style.display = 'block';
+
+        // Also show a brief alert (as required by the spec)
+        alert('✅ Thank you, ' + name + '! Your message has been sent successfully. We\'ll reply within 24 hours.');
+
+        // Hide the success banner after 6 seconds
+        setTimeout(() => { banner.style.display = 'none'; }, 6000);
+      }
+    });
+
+
+    /* -----------------------------------------------
+       4. STICKY HEADER SHADOW ON SCROLL
+       ----------------------------------------------- */
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 20) {
+        header.style.boxShadow = '0 4px 32px rgba(0,0,0,.4)';
+      } else {
+        header.style.boxShadow = 'none';
+      }
+    });
+
+  </script>
+
+</body>
+</html>
